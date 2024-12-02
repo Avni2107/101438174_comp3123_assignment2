@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./backend  # Path to your backend directory
+    container_name: backend
+    ports:
+      - "5000:5000"  # Map port 5000 in the container to port 5000 on your local machine
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/your-database-name  # MongoDB URI
+    depends_on:
+      - mongo  # Ensure MongoDB is up before starting the backend
+
+  # Frontend service (React app)
+  frontend:
+    build:
+      context: ./frontend  # Path to your frontend directory
+    container_name: frontend
+    ports:
+      - "3000:3000"  # Map port 3000 in the container to port 3000 on your local machine
+    depends_on:
+      - backend  # Ensure the backend is up before starting the frontend
+
+  # MongoDB service
+  mongo:
+    image: mongo:latest  # Use the official MongoDB image
+    container_name: mongo
+    ports:
+      - "27017:27017"  # Map port 27017 in the container to port 27017 on your local machine
+    volumes:
+      - mongo-data:/data/db  # Persist MongoDB data even if the container is removed
+
+volumes:
+  mongo-data:  # Define a volume for MongoDB to persist data across container restarts
